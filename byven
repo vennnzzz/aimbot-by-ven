@@ -33,7 +33,7 @@ local Tab = Window:CreateTab("Main", "target")
 local Section = Tab:CreateSection("Aimbot Controls")
 
 local aimbotEnabled = false
-local keybind = Enum.KeyCode.R -- Default keybind
+local keybind = Enum.KeyCode.R
 local aimTarget = "Head"
 local aimbotConnection
 local Toggle
@@ -117,28 +117,18 @@ local Dropdown = Tab:CreateDropdown({
     end
 })
 
-local function updateKeybind(newKey)
-    if typeof(newKey) == "EnumItem" then
-        keybind = newKey
-        print("Keybind successfully updated to:", keybind.Name)
-    else
-        print("Error: Invalid key received:", newKey)
-    end
-end
-
 local Keybind = Tab:CreateKeybind({
     Name = "Aimbot Toggle Key",
-    CurrentKeybind = keybind,
+    CurrentKeybind = "R",
     HoldToInteract = false,
-    Callback = updateKeybind -- Calls the function to update properly
+    Callback = function(key)
+        keybind = key
+    end
 })
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard then
-        if input.KeyCode == keybind then
-            print("Aimbot Toggle Key Pressed:", keybind.Name)
-            toggleAimbot()
-        end
+    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
+        toggleAimbot()
     end
 end)
 
