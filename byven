@@ -1,0 +1,122 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local Window = Rayfield:CreateWindow({
+    Name = "Aimbot Settings",
+    Icon = "crosshair",
+    LoadingTitle = "Loading Aimbot UI...",
+    LoadingSubtitle = "by Ven",
+    Theme = "Dark",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "AimbotHub",
+        FileName = "AimbotSettings"
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "Aimbot Access",
+        Subtitle = "Enter Key to Continue",
+        Note = "Key: dark is bad",
+        FileName = "AimbotKey",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = {"dark is bad"}
+    }
+})
+
+local Tab = Window:CreateTab("Main", "target")
+local Section = Tab:CreateSection("Aimbot Controls")
+
+local aimbotEnabled = false
+local keybind = Enum.KeyCode.R
+local aimTarget = "Head"
+
+local function getRigType(character)
+    if character:FindFirstChild("Torso") then
+        return "R6"
+    elseif character:FindFirstChild("UpperTorso") then
+        return "R15"
+    end
+    return "Unknown"
+end
+
+local function getTargetPart(character)
+    local rigType = getRigType(character)
+    if rigType == "R6" then
+        return aimTarget == "Head" and character:FindFirstChild("Head") or character:FindFirstChild("Torso")
+    elseif rigType == "R15" then
+        return aimTarget == "Head" and character:FindFirstChild("Head") or character:FindFirstChild("UpperTorso")
+    end
+    return nil
+end
+
+local function aimAtTarget()
+    if not aimbotEnabled then return end
+    local target = nil
+    local shortestDistance = math.huge
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local part = getTargetPart(player.Character)
+            if part then
+                local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local distance = (Vector2.new(screenPos.X, screenPos.Y) - UserInputService:GetMouseLocation()).Magnitude
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        target = part
+                    end
+                end
+            end
+        end
+    end
+    
+    if target then
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Position)
+    end
+end
+
+RunService.RenderStepped:Connect(aimAtTarget)
+
+local Toggle = Tab:CreateToggle({
+    Name = "Enable Aimbot",
+    CurrentValue = false,
+    Callback = function(value)
+        aimbotEnabled = value
+    end
+})
+
+local Dropdown = Tab:CreateDropdown({
+    Name = "Aim Target",
+    Options = {"Head", "Torso"},
+    CurrentOption = "Head",
+    Callback = function(selected)
+        aimTarget = selected
+    end
+})
+
+local Keybind = Tab:CreateKeybind({
+    Name = "Aimbot Toggle Key",
+    CurrentKeybind = "R",
+    HoldToInteract = false,
+    Callback = function(key)
+        keybind = key
+    end
+})
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
+        aimbotEnabled = not aimbotEnabled
+        Toggle:Set(aimbotEnabled)
+    end
+end)
+
+local Credits = Tab:CreateSection("Credits")
+local Label = Tab:CreateLabel("Made by Ven")
+
+Rayfield:LoadConfiguration()
