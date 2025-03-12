@@ -129,6 +129,13 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind and aimbotEnabled then
+        toggleAimbot(false)
+        Toggle:Set(aimbotEnabled)
+    end
+end)
+
 local Credits = Tab:CreateSection("Credits")
 local Label = Tab:CreateLabel("Made by Ven")
 
