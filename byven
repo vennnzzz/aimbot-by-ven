@@ -33,10 +33,9 @@ local Tab = Window:CreateTab("Main", "target")
 local Section = Tab:CreateSection("Aimbot Controls")
 
 local aimbotEnabled = false
+local aimbotActive = false
 local keybind = Enum.KeyCode.R
 local aimTarget = "Head"
-local aimbotConnection
-local Toggle
 
 local function getRigType(character)
     if character:FindFirstChild("Torso") then
@@ -58,7 +57,7 @@ local function getTargetPart(character)
 end
 
 local function aimAtTarget()
-    if not aimbotEnabled then return end
+    if not aimbotEnabled or not aimbotActive then return end
     local target = nil
     local shortestDistance = math.huge
     
@@ -83,28 +82,14 @@ local function aimAtTarget()
     end
 end
 
-local function toggleAimbot()
-    aimbotEnabled = not aimbotEnabled
-    if aimbotEnabled then
-        if not aimbotConnection then
-            aimbotConnection = RunService.RenderStepped:Connect(aimAtTarget)
-        end
-    else
-        if aimbotConnection then
-            aimbotConnection:Disconnect()
-            aimbotConnection = nil
-        end
-    end
-    if Toggle then
-        Toggle:Set(aimbotEnabled)
-    end
-end
+RunService.RenderStepped:Connect(aimAtTarget)
 
-Toggle = Tab:CreateToggle({
+local Toggle = Tab:CreateToggle({
     Name = "Enable Aimbot",
     CurrentValue = false,
     Callback = function(value)
-        toggleAimbot()
+        aimbotEnabled = value
+        aimbotActive = false -- Reset activation when toggled off
     end
 })
 
@@ -128,7 +113,11 @@ local Keybind = Tab:CreateKeybind({
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
-        toggleAimbot()
+        if aimbotEnabled then
+            aimbotActive = not aimbotActive
+        else
+            aimbotActive = false
+        end
     end
 end)
 
