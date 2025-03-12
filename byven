@@ -82,8 +82,8 @@ local function aimAtTarget()
     end
 end
 
-local function toggleAimbot(state)
-    aimbotEnabled = state
+local function toggleAimbot()
+    aimbotEnabled = not aimbotEnabled
     if aimbotEnabled then
         if not aimbotConnection then
             aimbotConnection = RunService.RenderStepped:Connect(aimAtTarget)
@@ -94,13 +94,14 @@ local function toggleAimbot(state)
             aimbotConnection = nil
         end
     end
+    Toggle:Set(aimbotEnabled)
 end
 
 local Toggle = Tab:CreateToggle({
     Name = "Enable Aimbot",
     CurrentValue = false,
     Callback = function(value)
-        toggleAimbot(value)
+        toggleAimbot()
     end
 })
 
@@ -124,15 +125,7 @@ local Keybind = Tab:CreateKeybind({
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
-        toggleAimbot(not aimbotEnabled)
-        Toggle:Set(aimbotEnabled)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind and aimbotEnabled then
-        toggleAimbot(false)
-        Toggle:Set(aimbotEnabled)
+        toggleAimbot()
     end
 end)
 
