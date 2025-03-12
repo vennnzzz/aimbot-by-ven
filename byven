@@ -36,6 +36,7 @@ local aimbotEnabled = false
 local keybind = Enum.KeyCode.R
 local aimTarget = "Head"
 local aimbotConnection
+local Toggle
 
 local function getRigType(character)
     if character:FindFirstChild("Torso") then
@@ -94,10 +95,12 @@ local function toggleAimbot()
             aimbotConnection = nil
         end
     end
-    Toggle:Set(aimbotEnabled)
+    if Toggle then
+        Toggle:Set(aimbotEnabled)
+    end
 end
 
-local Toggle = Tab:CreateToggle({
+Toggle = Tab:CreateToggle({
     Name = "Enable Aimbot",
     CurrentValue = false,
     Callback = function(value)
