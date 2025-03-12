@@ -119,18 +119,16 @@ local Dropdown = Tab:CreateDropdown({
 
 local Keybind = Tab:CreateKeybind({
     Name = "Aimbot Toggle Key",
-    CurrentKeybind = "R",
+    CurrentKeybind = Enum.KeyCode.R, 
     HoldToInteract = false,
     Callback = function(key)
-        if Enum.KeyCode[key] then
-            keybind = Enum.KeyCode[key]
-            print("Keybind set to:", keybind.Name) -- Debugging print
-        end
+        keybind = key 
+        print("Keybind updated to:", keybind.Name) -- Debugging print
     end
 })
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == keybind then
+    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
         print("Pressed:", input.KeyCode.Name) -- Debugging print
         toggleAimbot()
     end
