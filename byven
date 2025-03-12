@@ -33,7 +33,7 @@ local Tab = Window:CreateTab("Main", "target")
 local Section = Tab:CreateSection("Aimbot Controls")
 
 local aimbotEnabled = false
-local keybind = Enum.KeyCode.R
+local keybind = Enum.KeyCode.R -- Default keybind
 local aimTarget = "Head"
 local aimbotConnection
 local Toggle
@@ -122,12 +122,16 @@ local Keybind = Tab:CreateKeybind({
     CurrentKeybind = "R",
     HoldToInteract = false,
     Callback = function(key)
-        keybind = key
+        if Enum.KeyCode[key] then
+            keybind = Enum.KeyCode[key]
+            print("Keybind set to:", keybind.Name) -- Debugging print
+        end
     end
 })
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
+    if not gameProcessed and input.KeyCode == keybind then
+        print("Pressed:", input.KeyCode.Name) -- Debugging print
         toggleAimbot()
     end
 end)
