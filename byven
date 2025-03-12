@@ -119,11 +119,13 @@ local Dropdown = Tab:CreateDropdown({
 
 local Keybind = Tab:CreateKeybind({
     Name = "Aimbot Toggle Key",
-    CurrentKeybind = Enum.KeyCode.R, 
+    CurrentKeybind = keybind,
     HoldToInteract = false,
     Callback = function(key)
-        keybind = key 
-        print("Keybind updated to:", keybind.Name) -- Debugging print
+        if typeof(key) == "EnumItem" then
+            keybind = key
+            print("Keybind updated to:", keybind.Name) -- Debugging print
+        end
     end
 })
 
