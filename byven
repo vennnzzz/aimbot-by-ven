@@ -117,22 +117,28 @@ local Dropdown = Tab:CreateDropdown({
     end
 })
 
+local function updateKeybind(newKey)
+    if typeof(newKey) == "EnumItem" then
+        keybind = newKey
+        print("Keybind successfully updated to:", keybind.Name)
+    else
+        print("Error: Invalid key received:", newKey)
+    end
+end
+
 local Keybind = Tab:CreateKeybind({
     Name = "Aimbot Toggle Key",
     CurrentKeybind = keybind,
     HoldToInteract = false,
-    Callback = function(key)
-        if typeof(key) == "EnumItem" then
-            keybind = key
-            print("Keybind updated to:", keybind.Name) -- Debugging print
-        end
-    end
+    Callback = updateKeybind -- Calls the function to update properly
 })
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keybind then
-        print("Pressed:", input.KeyCode.Name) -- Debugging print
-        toggleAimbot()
+    if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard then
+        if input.KeyCode == keybind then
+            print("Aimbot Toggle Key Pressed:", keybind.Name)
+            toggleAimbot()
+        end
     end
 end)
 
